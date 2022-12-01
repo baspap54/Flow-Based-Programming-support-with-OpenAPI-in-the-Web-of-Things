@@ -1,0 +1,3376 @@
+[
+    {
+        "id": "f6f2187d.f17ca8",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "11c327a3c5924087",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "3d98f01458760241",
+        "type": "tab",
+        "label": "Flow 3",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "dcff73d26f63bd25",
+        "type": "tab",
+        "label": "Flow 4",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9576478f3bc587d1",
+        "type": "openapi-schema",
+        "name": "OpenAPI Schema",
+        "baseURL": "/"
+    },
+    {
+        "id": "011089313ad7e882",
+        "type": "mongodb",
+        "hostname": "172.16.1.6",
+        "topology": "direct",
+        "connectOptions": "",
+        "port": "27017",
+        "db": "orion",
+        "name": ""
+    },
+    {
+        "id": "5028455c32532ae3",
+        "type": "mongodb",
+        "hostname": "127.0.0.1/mongo",
+        "topology": "direct",
+        "connectOptions": "",
+        "port": "27017",
+        "db": "mongo",
+        "name": ""
+    },
+    {
+        "id": "688d2c635bb0f177",
+        "type": "mongodb",
+        "hostname": "172.16.1.6",
+        "topology": "direct",
+        "connectOptions": "",
+        "port": "27017",
+        "db": "mongo",
+        "name": ""
+    },
+    {
+        "id": "3cc11d24.ff01a2",
+        "type": "comment",
+        "z": "f6f2187d.f17ca8",
+        "name": "WARNING: please check you have started this container with a volume that is mounted to /data\\n otherwise any flow changes are lost when you redeploy or upgrade the container\\n (e.g. upgrade to a more recent node-red docker image).\\n  If you are using named volumes you can ignore this warning.\\n Double click or see info side panel to learn how to start Node-RED in Docker to save your work",
+        "info": "\nTo start docker with a bind mount volume (-v option), for example:\n\n```\ndocker run -it -p 1880:1880 -v /home/user/node_red_data:/data --name mynodered nodered/node-red\n```\n\nwhere `/home/user/node_red_data` is a directory on your host machine where you want to store your flows.\n\nIf you do not do this then you can experiment and redploy flows, but if you restart or upgrade the container the flows will be disconnected and lost. \n\nThey will still exist in a hidden data volume, which can be recovered using standard docker techniques, but that is much more complex than just starting with a named volume as described above.",
+        "x": 350,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "a77023ba0c97f3fa",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1390,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "82aa2752fd0ae44e",
+        "type": "mongodb in",
+        "z": "f6f2187d.f17ca8",
+        "mongodb": "688d2c635bb0f177",
+        "name": "",
+        "collection": "things",
+        "operation": "find",
+        "x": 1080,
+        "y": 200,
+        "wires": [
+            [
+                "a77023ba0c97f3fa"
+            ]
+        ]
+    },
+    {
+        "id": "60e7a4db7cdcac0b",
+        "type": "mongodb in",
+        "z": "f6f2187d.f17ca8",
+        "mongodb": "011089313ad7e882",
+        "name": "Find Temperature (ORION)",
+        "collection": "entities",
+        "operation": "find",
+        "x": 1260,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e28bb3ca4d63cc50",
+        "type": "openApi-red",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/627ef8f5fc2db898a266e400",
+        "api": "Properties",
+        "server": "",
+        "keepAuth": "",
+        "alternServer": false,
+        "operation": "retrieveTempProperty",
+        "operationData": {
+            "tags": [
+                "Properties"
+            ],
+            "summary": "Retrieve the value of a property (temperature)",
+            "description": "In response to an HTTP GET request on a Property URL, an Extended Web Thing must return an array that lists recent values of that Property.",
+            "operationId": "retrieveTempProperty",
+            "parameters": [
+                {
+                    "name": "page",
+                    "description": "Pagination first (page) parameter",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/6238c6d039e3d721ea4d6b8e#/components/parameters/pageParam"
+                },
+                {
+                    "name": "perPage",
+                    "description": "Pagination second (per page) parameter",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "successful operation",
+                    "headers": {
+                        "Result-Count": {
+                            "schema": {
+                                "type": "integer",
+                                "example": 562
+                            },
+                            "description": "The Result-Count header contains the total number of results."
+                        }
+                    },
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "x-kindOf": "http://www.w3.org/ns/sosa/Observation",
+                                    "properties": {
+                                        "temp": {
+                                            "type": "integer",
+                                            "example": 25,
+                                            "x-kindOf": "http://www.w3.org/ns/sosa/hasSimpleResult"
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "x-kindOf": "http://www.w3.org/ns/sosa/resultTime"
+                                        }
+                                    },
+                                    "$$ref": "http://172.16.1.1:5001/things/6238c6d039e3d721ea4d6b8e#/components/schemas/TempMeasurement"
+                                }
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "retrieveTempProperty",
+            "path": "/properties/temperature"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "pagequery",
+                "name": "page",
+                "in": "query",
+                "required": false,
+                "value": "",
+                "isActive": false,
+                "type": "num",
+                "allowedTypes": [
+                    "num",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "description": "Pagination first (page) parameter",
+                "schema": {
+                    "type": "integer"
+                },
+                "keys": null
+            },
+            {
+                "id": "perPagequery",
+                "name": "perPage",
+                "in": "query",
+                "required": false,
+                "value": "",
+                "isActive": false,
+                "type": "num",
+                "allowedTypes": [
+                    "num",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "description": "Pagination second (per page) parameter",
+                "schema": {
+                    "type": "integer"
+                },
+                "keys": null
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "application/json",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 540,
+        "y": 700,
+        "wires": [
+            [
+                "0c6af71784cebca9"
+            ]
+        ]
+    },
+    {
+        "id": "9398bbb288ce67bb",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "func": "function getRandomInt(max) {\n  return Math.floor(Math.random() * max);\n} \n\nlet temp = getRandomInt(80);\nlet tempVal = temp.toString();\n\nmsg.payload = {\n    \"id\": \"DHT22_sensor_temperature\",\n    \"type\": \"property\",\n    \"Thing\": \"DHT22_sensor\",\n    \"name\": \"Temperature\",\n    \"property\": \"temperature\",\n    \"values\": {\n        \"temp\": tempVal,\n        \"timestamp\": \"2020-06-14T14:30:00.000Z\"\n    }\n};\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nfunction getRandomInt(max) {\n  return Math.floor(Math.random() * max);\n} \n\nvar randTemp = getRandomInt(60);\n\nif (flow.get(\"temp\") === undefined) {\n    flow.set(\"temp\", randTemp);\n}",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 820,
+        "wires": [
+            [
+                "df9b5d8d66c77b3a"
+            ]
+        ]
+    },
+    {
+        "id": "df9b5d8d66c77b3a",
+        "type": "http request",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://172.16.1.7:1026/v2/entities/?options=keyValues",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 770,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d1d5d7a287f3deb0",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "Inject",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 110,
+        "y": 780,
+        "wires": [
+            [
+                "3966c0256ff36cca",
+                "0643a19b8ac13469"
+            ]
+        ]
+    },
+    {
+        "id": "3966c0256ff36cca",
+        "type": "http request",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "method": "DELETE",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://172.16.1.7:1026/v2/entities/DHT22_sensor_temperature",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 290,
+        "y": 820,
+        "wires": [
+            [
+                "9398bbb288ce67bb"
+            ]
+        ]
+    },
+    {
+        "id": "1537361b86e71261",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "func": "console.log(msg.payload.body.temp);\nvar msg1 = { payload:\"UNLOCK DOOR\"};\nreturn msg1;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 620,
+        "wires": [
+            [
+                "e81b04fb31c6403e"
+            ]
+        ]
+    },
+    {
+        "id": "0c6af71784cebca9",
+        "type": "switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "property": "payload.body.temp",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "40",
+                "vt": "str"
+            },
+            {
+                "t": "lte",
+                "v": "40",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 700,
+        "wires": [
+            [
+                "1537361b86e71261"
+            ],
+            [
+                "21eb06f8e6a98dbe"
+            ]
+        ]
+    },
+    {
+        "id": "0643a19b8ac13469",
+        "type": "delay",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 280,
+        "y": 740,
+        "wires": [
+            [
+                "e28bb3ca4d63cc50"
+            ]
+        ]
+    },
+    {
+        "id": "21eb06f8e6a98dbe",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "func": "console.log(\"Temperature is fine!\")\nvar msg2 = { payload:\"LOCK DOOR\"};\nreturn msg2;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 780,
+        "wires": [
+            [
+                "a93b4123fb832ee4"
+            ]
+        ]
+    },
+    {
+        "id": "db3689c90a9ddcea",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 820,
+        "y": 200,
+        "wires": [
+            [
+                "82aa2752fd0ae44e"
+            ]
+        ]
+    },
+    {
+        "id": "a93b4123fb832ee4",
+        "type": "openApi-red",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/627ef8fdfc2db898a266e401",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": "",
+        "alternServer": false,
+        "operation": "executeSwitchOffAction",
+        "operationData": {
+            "tags": [
+                "Actions"
+            ],
+            "summary": "Execute an switch off action",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeSwitchOffAction",
+            "requestBody": {
+                "description": "Request body to switch off the AC",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "AirCondition_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "switchOn"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "SwitchOnRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/62507e0a77c6be2132ce857a#/components/schemas/SwitchOnRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeSwitchOffAction",
+            "path": "/actions/switchOff"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "AirCondition_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "switchOn"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "SwitchOnRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/62507e0a77c6be2132ce857a#/components/schemas/SwitchOnRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartDoor_actuator\",\"name\":\"switchOff\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\"}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body to switch off the AC",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 1190,
+        "y": 780,
+        "wires": [
+            [
+                "949a9850e368a41b"
+            ]
+        ]
+    },
+    {
+        "id": "e81b04fb31c6403e",
+        "type": "openApi-red",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/62507e0a77c6be2132ce857a",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": "",
+        "alternServer": false,
+        "operation": "executeSwitchOnAction",
+        "operationData": {
+            "tags": [
+                "Actions"
+            ],
+            "summary": "Execute a switch on action",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeSwitchOnAction",
+            "requestBody": {
+                "description": "Request body to switch on the AC",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "AirCondition_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "switchOn"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "SwitchOnRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/62507e0a77c6be2132ce857a#/components/schemas/SwitchOnRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeSwitchOnAction",
+            "path": "/actions/switchOn"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "AirCondition_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "switchOn"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "SwitchOnRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/62507e0a77c6be2132ce857a#/components/schemas/SwitchOnRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartDoor_actuator\",\"name\":\"switchOn\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\"}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body to switch on the AC",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 1190,
+        "y": 620,
+        "wires": [
+            [
+                "53033c68950c2046"
+            ]
+        ]
+    },
+    {
+        "id": "949a9850e368a41b",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1390,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "53033c68950c2046",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1390,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "0d8151a7ada2cc4e",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 90,
+        "y": 480,
+        "wires": [
+            [
+                "25d3953c43374802"
+            ]
+        ]
+    },
+    {
+        "id": "25d3953c43374802",
+        "type": "openApi-red",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/62507e0a77c6be2132ce857a",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": "",
+        "alternServer": false,
+        "operation": "retrieveWebThingActions",
+        "operationData": {
+            "tags": [
+                "Actions"
+            ],
+            "summary": "Retrieve a list of actions",
+            "operationId": "retrieveWebThingActions",
+            "responses": {
+                "200": {
+                    "description": "OK",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "required": [
+                                        "id",
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "example": "on"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Switch on the Air Condition"
+                                        }
+                                    },
+                                    "xml": {
+                                        "name": "Action"
+                                    },
+                                    "$$ref": "http://172.16.1.1:5001/things/62507e0a77c6be2132ce857a#/components/schemas/Action"
+                                }
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "retrieveWebThingActions",
+            "path": "/actions"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [],
+        "requestContentType": "application/json",
+        "responseContentType": "application/json",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 370,
+        "y": 480,
+        "wires": [
+            [
+                "b3d85733f5d07ff4"
+            ]
+        ]
+    },
+    {
+        "id": "b3d85733f5d07ff4",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "743f42e25c66d591",
+        "type": "openApi-red",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/6253077347ef81c922dd2477",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": "",
+        "alternServer": false,
+        "operation": "executeLockAction",
+        "operationData": {
+            "tags": [
+                "SmartDoor"
+            ],
+            "summary": "Execute a lock action",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeLockAction",
+            "requestBody": {
+                "description": "Request body for the smart door lock",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type",
+                                "value"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "SmartDoor_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "lock"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "LockRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/6253156f1f828ab4ddcdd5b1#/components/schemas/LockRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeLockAction",
+            "path": "/actions/lock"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type",
+                        "value"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "SmartDoor_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "lock"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "LockRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/6253156f1f828ab4ddcdd5b1#/components/schemas/LockRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartHome_actuator\",\"name\":\"lock\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\",\"value\":{\"delay\":50}}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body for the smart door lock",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 350,
+        "y": 580,
+        "wires": [
+            [
+                "7a133eb250ea5f93"
+            ]
+        ]
+    },
+    {
+        "id": "7a133eb250ea5f93",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "1d06011bd8d9cd78",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 90,
+        "y": 580,
+        "wires": [
+            [
+                "743f42e25c66d591"
+            ]
+        ]
+    },
+    {
+        "id": "70262de033d64659",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 90,
+        "y": 340,
+        "wires": [
+            [
+                "36348ec8929b79a8"
+            ]
+        ]
+    },
+    {
+        "id": "ea14221c5c154835",
+        "type": "openApi-red",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": false,
+        "alternServer": false,
+        "operation": "executeLampOnAction",
+        "operationData": {
+            "tags": [
+                "SmartLamp"
+            ],
+            "summary": "Switch ON the Smart Lamp",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeLampOnAction",
+            "requestBody": {
+                "description": "Request body to switch on the Smart Lamp",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "SmartLamp_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "lampOn"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "LampOnRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/6253156f1f828ab4ddcdd5b1#/components/schemas/LampOnRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeLampOnAction",
+            "path": "/actions/lampOn"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "SmartLamp_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "lampOn"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "LampOnRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/6253156f1f828ab4ddcdd5b1#/components/schemas/LampOnRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartHome_actuator\",\"name\":\"lampOn\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\",\"value\":{\"delay\":50}}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body to switch on the Smart Lamp",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 540,
+        "y": 260,
+        "wires": [
+            [
+                "d09fce4988620648"
+            ]
+        ]
+    },
+    {
+        "id": "d09fce4988620648",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 790,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "de74a42b0ee3e969",
+        "type": "openApi-red",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476",
+        "api": "Properties",
+        "server": "",
+        "keepAuth": false,
+        "alternServer": false,
+        "operation": "retrieveProperty",
+        "operationData": {
+            "tags": [
+                "Properties"
+            ],
+            "summary": "Retrieve the value of a property (Smart Lamp ON or OFF)",
+            "description": "In response to an HTTP GET request on a Property URL, an Extended Web Thing must return an array that lists recent values of that Property.",
+            "operationId": "retrieveProperty",
+            "parameters": [
+                {
+                    "name": "page",
+                    "description": "Pagination first (page) parameter",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476#/components/parameters/pageParam"
+                },
+                {
+                    "name": "perPage",
+                    "description": "Pagination second (per page) parameter",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "successful operation",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "x-kindOf": "http://www.w3.org/ns/sosa/Observation",
+                                    "properties": {
+                                        "state": {
+                                            "type": "string",
+                                            "x-kindOf": "http://www.w3.org/ns/sosa/hasSimpleResult",
+                                            "enum": [
+                                                "ON",
+                                                "OFF"
+                                            ]
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "x-kindOf": "http://www.w3.org/ns/sosa/resultTime"
+                                        }
+                                    },
+                                    "xml": {
+                                        "name": "State"
+                                    },
+                                    "$$ref": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476#/components/schemas/State"
+                                }
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "retrieveProperty",
+            "path": "/properties/state"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "pagequery",
+                "name": "page",
+                "in": "query",
+                "required": false,
+                "value": "",
+                "isActive": false,
+                "type": "num",
+                "allowedTypes": [
+                    "num",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "description": "Pagination first (page) parameter",
+                "schema": {
+                    "type": "integer"
+                },
+                "keys": null
+            },
+            {
+                "id": "perPagequery",
+                "name": "perPage",
+                "in": "query",
+                "required": false,
+                "value": "",
+                "isActive": false,
+                "type": "num",
+                "allowedTypes": [
+                    "num",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "description": "Pagination second (per page) parameter",
+                "schema": {
+                    "type": "integer"
+                },
+                "keys": null
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "application/json",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 520,
+        "y": 400,
+        "wires": [
+            [
+                "d09fce4988620648"
+            ]
+        ]
+    },
+    {
+        "id": "36348ec8929b79a8",
+        "type": "time-range-switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "lat": "",
+        "lon": "",
+        "startTime": "20:00",
+        "endTime": "02:00",
+        "startOffset": 0,
+        "endOffset": 0,
+        "x": 290,
+        "y": 340,
+        "wires": [
+            [
+                "ea14221c5c154835"
+            ],
+            [
+                "de74a42b0ee3e969"
+            ]
+        ]
+    },
+    {
+        "id": "ed1f19f2ad07a7f1",
+        "type": "inject",
+        "z": "3d98f01458760241",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 280,
+        "y": 280,
+        "wires": [
+            [
+                "420f53cb2f006a24",
+                "43c3acc1c29334b3"
+            ]
+        ]
+    },
+    {
+        "id": "420f53cb2f006a24",
+        "type": "http request",
+        "z": "3d98f01458760241",
+        "name": "",
+        "method": "DELETE",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://172.16.1.7:1026/v2/entities/Motion_sensor_state",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 470,
+        "y": 380,
+        "wires": [
+            [
+                "176d20263f699fc1"
+            ]
+        ]
+    },
+    {
+        "id": "176d20263f699fc1",
+        "type": "function",
+        "z": "3d98f01458760241",
+        "name": "",
+        "func": "msg.payload = {\n    \"id\": \"Motion_sensor_state\",\n    \"type\": \"property\",\n    \"Thing\": \"Motion_sensor\",\n    \"name\": \"state\",\n    \"property\": \"state\",\n    \"values\": {\n        \"state\": \"CLEAR\"\n    }\n};\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 380,
+        "wires": [
+            [
+                "083e068cdd54ab07"
+            ]
+        ]
+    },
+    {
+        "id": "083e068cdd54ab07",
+        "type": "http request",
+        "z": "3d98f01458760241",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://172.16.1.7:1026/v2/entities?options=keyValues",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 850,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "43c3acc1c29334b3",
+        "type": "delay",
+        "z": "3d98f01458760241",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 460,
+        "y": 220,
+        "wires": [
+            [
+                "2bfd0d85183865d8"
+            ]
+        ]
+    },
+    {
+        "id": "2bfd0d85183865d8",
+        "type": "openApi-red",
+        "z": "3d98f01458760241",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/625e8c3075b3fc89d2087203",
+        "api": "Properties",
+        "server": "",
+        "keepAuth": false,
+        "alternServer": false,
+        "operation": "retrieveProperty",
+        "operationData": {
+            "tags": [
+                "Properties"
+            ],
+            "summary": "Retrieve the state of the motion sensor (DETECTED or CLEAR)",
+            "description": "In response to an HTTP GET request on a Property URL, an Extended Web Thing must return an array that lists recent values of that Property.",
+            "operationId": "retrieveProperty",
+            "parameters": [
+                {
+                    "name": "page",
+                    "description": "Pagination first (page) parameter",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/625e8c3075b3fc89d2087203#/components/parameters/pageParam"
+                },
+                {
+                    "name": "perPage",
+                    "description": "Pagination second (per page) parameter",
+                    "in": "query",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "successful operation",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "x-kindOf": "http://www.w3.org/ns/sosa/Observation",
+                                    "properties": {
+                                        "state": {
+                                            "type": "string",
+                                            "x-kindOf": "http://www.w3.org/ns/sosa/hasSimpleResult",
+                                            "enum": [
+                                                "DETECTED",
+                                                "CLEAR"
+                                            ]
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "x-kindOf": "http://www.w3.org/ns/sosa/resultTime"
+                                        }
+                                    },
+                                    "xml": {
+                                        "name": "State"
+                                    },
+                                    "$$ref": "http://172.16.1.1:5001/things/625e8c3075b3fc89d2087203#/components/schemas/State"
+                                }
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "retrieveProperty",
+            "path": "/properties/state"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "pagequery",
+                "name": "page",
+                "in": "query",
+                "required": false,
+                "value": "",
+                "isActive": false,
+                "type": "num",
+                "allowedTypes": [
+                    "num",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "description": "Pagination first (page) parameter",
+                "schema": {
+                    "type": "integer"
+                },
+                "keys": null
+            },
+            {
+                "id": "perPagequery",
+                "name": "perPage",
+                "in": "query",
+                "required": false,
+                "value": "",
+                "isActive": false,
+                "type": "num",
+                "allowedTypes": [
+                    "num",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "description": "Pagination second (per page) parameter",
+                "schema": {
+                    "type": "integer"
+                },
+                "keys": null
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "application/json",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 680,
+        "y": 220,
+        "wires": [
+            [
+                "cbee0b0a2e62d047"
+            ]
+        ]
+    },
+    {
+        "id": "cbee0b0a2e62d047",
+        "type": "switch",
+        "z": "3d98f01458760241",
+        "name": "",
+        "property": "payload.body.state",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "DETECTED",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "CLEAR",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 870,
+        "y": 220,
+        "wires": [
+            [
+                "ce68f4950b4f6c45"
+            ],
+            [
+                "416c738aec7272d1"
+            ]
+        ]
+    },
+    {
+        "id": "ce68f4950b4f6c45",
+        "type": "openApi-red",
+        "z": "3d98f01458760241",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": false,
+        "alternServer": false,
+        "operation": "executeLampOnAction",
+        "operationData": {
+            "tags": [
+                "SmartLamp"
+            ],
+            "summary": "Switch ON the Smart Lamp",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeLampOnAction",
+            "requestBody": {
+                "description": "Request body to switch on the Smart Lamp",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "SmartLamp_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "lampOn"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "LampOnRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/6253156f1f828ab4ddcdd5b1#/components/schemas/LampOnRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeLampOnAction",
+            "path": "/actions/lampOn"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "SmartLamp_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "lampOn"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "LampOnRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/6253156f1f828ab4ddcdd5b1#/components/schemas/LampOnRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartHome_actuator\",\"name\":\"lampOn\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\",\"value\":{\"delay\":50}}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body to switch on the Smart Lamp",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 1100,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "416c738aec7272d1",
+        "type": "openApi-red",
+        "z": "3d98f01458760241",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": false,
+        "alternServer": false,
+        "operation": "executeLampOffAction",
+        "operationData": {
+            "tags": [
+                "Actions"
+            ],
+            "summary": "switch OFF the smart Lamp",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeLampOffAction",
+            "requestBody": {
+                "description": "Request body to switch off the Smart Lamp",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "SmartLamp_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "lampOn"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "LampOnRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476#/components/schemas/LampOnRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeLampOffAction",
+            "path": "/actions/lampOff"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "SmartLamp_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "lampOn"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "LampOnRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476#/components/schemas/LampOnRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartHome_actuator\",\"name\":\"lampOff\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\",\"value\":{\"delay\":50}}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body to switch off the Smart Lamp",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 1100,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "265777b726da0585",
+        "type": "comment",
+        "z": "3d98f01458760241",
+        "name": "Description",
+        "info": "Motion Sensor and Smart Lamp application",
+        "x": 200,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "3e9bbe0cd3b483e1",
+        "type": "inject",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 170,
+        "y": 220,
+        "wires": [
+            [
+                "ed5dba6a34d4c564"
+            ]
+        ]
+    },
+    {
+        "id": "f98dca794fafdb75",
+        "type": "openApi-red",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": false,
+        "alternServer": false,
+        "operation": "executeLampOnAction",
+        "operationData": {
+            "tags": [
+                "SmartLamp"
+            ],
+            "summary": "Switch ON the Smart Lamp",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeLampOnAction",
+            "requestBody": {
+                "description": "Request body to switch on the Smart Lamp",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "SmartLamp_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "lampOn"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "LampOnRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/6253156f1f828ab4ddcdd5b1#/components/schemas/LampOnRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeLampOnAction",
+            "path": "/actions/lampOn"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "SmartLamp_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "lampOn"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "LampOnRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/6253156f1f828ab4ddcdd5b1#/components/schemas/LampOnRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartLamp_actuator\",\"name\":\"lampOn\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\",\"value\":{\"delay\":50}}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body to switch on the Smart Lamp",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 620,
+        "y": 140,
+        "wires": [
+            [
+                "cf1d312880a474ac"
+            ]
+        ]
+    },
+    {
+        "id": "cf1d312880a474ac",
+        "type": "debug",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 870,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "7b8432230b6d2b53",
+        "type": "openApi-red",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": false,
+        "alternServer": false,
+        "operation": "executeLampOffAction",
+        "operationData": {
+            "tags": [
+                "Actions"
+            ],
+            "summary": "switch OFF the smart Lamp",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeLampOffAction",
+            "requestBody": {
+                "description": "Request body to switch off the Smart Lamp",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "SmartLamp_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "lampOn"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "LampOnRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476#/components/schemas/LampOnRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeLampOffAction",
+            "path": "/actions/lampOff"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "SmartLamp_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "lampOn"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "LampOnRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476#/components/schemas/LampOnRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartLamp_actuator\",\"name\":\"lampOff\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\",\"value\":{\"delay\":50}}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body to switch off the Smart Lamp",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 620,
+        "y": 280,
+        "wires": [
+            [
+                "cf1d312880a474ac"
+            ]
+        ]
+    },
+    {
+        "id": "ed5dba6a34d4c564",
+        "type": "time-range-switch",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "lat": "",
+        "lon": "",
+        "startTime": "20:00",
+        "endTime": "02:00",
+        "startOffset": 0,
+        "endOffset": 0,
+        "x": 370,
+        "y": 220,
+        "wires": [
+            [
+                "f98dca794fafdb75"
+            ],
+            [
+                "7b8432230b6d2b53"
+            ]
+        ]
+    },
+    {
+        "id": "1605134ee00f3726",
+        "type": "time-range-switch",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "lat": "",
+        "lon": "",
+        "startTime": "24:00",
+        "endTime": "09:00",
+        "startOffset": 0,
+        "endOffset": 0,
+        "x": 330,
+        "y": 700,
+        "wires": [
+            [
+                "642e25f1bd2c16bd"
+            ],
+            [
+                "9a462a2835271abd"
+            ]
+        ]
+    },
+    {
+        "id": "95f345a8ab5f276c",
+        "type": "inject",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 130,
+        "y": 520,
+        "wires": [
+            [
+                "ed88ad303c9ef870",
+                "1605134ee00f3726"
+            ]
+        ]
+    },
+    {
+        "id": "688ff2bdbe662a4d",
+        "type": "openApi-red",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": false,
+        "alternServer": false,
+        "operation": "executeLampOnAction",
+        "operationData": {
+            "tags": [
+                "SmartLamp"
+            ],
+            "summary": "Switch ON the Smart Lamp",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeLampOnAction",
+            "requestBody": {
+                "description": "Request body to switch on the Smart Lamp",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "SmartLamp_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "lampOn"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "LampOnRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/6253156f1f828ab4ddcdd5b1#/components/schemas/LampOnRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeLampOnAction",
+            "path": "/actions/lampOn"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "SmartLamp_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "lampOn"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "LampOnRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/6253156f1f828ab4ddcdd5b1#/components/schemas/LampOnRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartLamp_actuator\",\"name\":\"lampOn\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\",\"value\":{\"delay\":50}}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body to switch on the Smart Lamp",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 580,
+        "y": 440,
+        "wires": [
+            [
+                "a4e92e094086a48e"
+            ]
+        ]
+    },
+    {
+        "id": "7606d9ae3a202fd2",
+        "type": "openApi-red",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": false,
+        "alternServer": false,
+        "operation": "executeLampOffAction",
+        "operationData": {
+            "tags": [
+                "Actions"
+            ],
+            "summary": "switch OFF the smart Lamp",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeLampOffAction",
+            "requestBody": {
+                "description": "Request body to switch off the Smart Lamp",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "SmartLamp_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "lampOn"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "LampOnRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476#/components/schemas/LampOnRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeLampOffAction",
+            "path": "/actions/lampOff"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "SmartLamp_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "lampOn"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "LampOnRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/625302b947ef81c922dd2476#/components/schemas/LampOnRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartLamp_actuator\",\"name\":\"lampOff\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\",\"value\":{\"delay\":50}}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body to switch off the Smart Lamp",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 580,
+        "y": 580,
+        "wires": [
+            [
+                "a4e92e094086a48e"
+            ]
+        ]
+    },
+    {
+        "id": "ed88ad303c9ef870",
+        "type": "time-range-switch",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "lat": "",
+        "lon": "",
+        "startTime": "20:00",
+        "endTime": "02:00",
+        "startOffset": 0,
+        "endOffset": 0,
+        "x": 330,
+        "y": 520,
+        "wires": [
+            [
+                "688ff2bdbe662a4d"
+            ],
+            [
+                "7606d9ae3a202fd2"
+            ]
+        ]
+    },
+    {
+        "id": "a4e92e094086a48e",
+        "type": "debug",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 850,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "642e25f1bd2c16bd",
+        "type": "openApi-red",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/6253077347ef81c922dd2477",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": false,
+        "alternServer": false,
+        "operation": "executeLockAction",
+        "operationData": {
+            "tags": [
+                "Actions"
+            ],
+            "summary": "Execute a lock action",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeLockAction",
+            "requestBody": {
+                "description": "Request body for the smart door lock",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type",
+                                "value"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "SmartDoor_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "lock"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "LockRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/6253077347ef81c922dd2477#/components/schemas/LockRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeLockAction",
+            "path": "/actions/lock"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type",
+                        "value"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "SmartDoor_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "lock"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "LockRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/6253077347ef81c922dd2477#/components/schemas/LockRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartDoor_actuator\",\"name\":\"lock\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\",\"value\":{\"delay\":50}}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body for the smart door lock",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 570,
+        "y": 660,
+        "wires": [
+            [
+                "a4e92e094086a48e"
+            ]
+        ]
+    },
+    {
+        "id": "9a462a2835271abd",
+        "type": "openApi-red",
+        "z": "dcff73d26f63bd25",
+        "name": "",
+        "openApiUrl": "http://172.16.1.1:5001/things/6253077347ef81c922dd2477",
+        "api": "Actions",
+        "server": "",
+        "keepAuth": false,
+        "alternServer": false,
+        "operation": "executeUnlockAction",
+        "operationData": {
+            "tags": [
+                "Actions"
+            ],
+            "summary": "Execute an unlock action",
+            "description": "In response to an HTTP POST request on an Action URL with valid parameters as request body, an Extended Web Thing must either reject the request with the appropriate status code or queue a task to run the action and return the status of that action in a 201 Created response. The action may not run immediately. The Location HTTP header identifies the URL to use to retrieve the most recent update on the action's status.",
+            "operationId": "executeUnlockAction",
+            "requestBody": {
+                "description": "Request body for the smart door unlock",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "Thing",
+                                "name",
+                                "status",
+                                "timestamp",
+                                "type",
+                                "value"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "execution"
+                                },
+                                "Thing": {
+                                    "type": "string",
+                                    "example": "SmartDoor_actuator"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "lock"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "example": "executing"
+                                },
+                                "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "value": {
+                                    "type": "object",
+                                    "properties": {
+                                        "delay": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 50
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "LockRequestBody"
+                            },
+                            "$$ref": "http://172.16.1.1:5001/things/6253077347ef81c922dd2477#/components/schemas/LockRequestBody"
+                        }
+                    }
+                },
+                "required": false
+            },
+            "responses": {
+                "204": {
+                    "description": "NO RESPONSE"
+                },
+                "404": {
+                    "description": "Not found"
+                }
+            },
+            "__originalOperationId": "executeUnlockAction",
+            "path": "/actions/unlock"
+        },
+        "errorHandling": "Standard",
+        "internalErrors": {
+            "readUrl": false
+        },
+        "parameters": [
+            {
+                "id": "requestBody",
+                "name": "Request body",
+                "in": "",
+                "schema": {
+                    "required": [
+                        "Thing",
+                        "name",
+                        "status",
+                        "timestamp",
+                        "type",
+                        "value"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "example": "execution"
+                        },
+                        "Thing": {
+                            "type": "string",
+                            "example": "SmartDoor_actuator"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "lock"
+                        },
+                        "status": {
+                            "type": "string",
+                            "example": "executing"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "value": {
+                            "type": "object",
+                            "properties": {
+                                "delay": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": 50
+                                }
+                            }
+                        }
+                    },
+                    "xml": {
+                        "name": "LockRequestBody"
+                    },
+                    "$$ref": "http://172.16.1.1:5001/things/6253077347ef81c922dd2477#/components/schemas/LockRequestBody"
+                },
+                "value": "{\"type\":\"execution\",\"Thing\":\"SmartDoor_actuator\",\"name\":\"unlock\",\"status\":\"executing\",\"timestamp\":\"2021-04-04T18:33:25.938Z\",\"value\":{\"delay\":50}}",
+                "required": false,
+                "isActive": true,
+                "description": "Request body for the smart door unlock",
+                "type": "json",
+                "allowedTypes": [
+                    "json",
+                    "jsonata",
+                    "msg",
+                    "flow",
+                    "global"
+                ],
+                "keys": [
+                    "Thing",
+                    "name",
+                    "status",
+                    "timestamp",
+                    "type",
+                    "value"
+                ]
+            }
+        ],
+        "requestContentType": "application/json",
+        "responseContentType": "",
+        "showDescription": true,
+        "outputs": 1,
+        "x": 580,
+        "y": 740,
+        "wires": [
+            [
+                "a4e92e094086a48e"
+            ]
+        ]
+    }
+]

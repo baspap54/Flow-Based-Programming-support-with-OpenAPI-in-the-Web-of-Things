@@ -1,0 +1,102 @@
+version: "2"
+services:
+
+  orion:
+    image: fiware/orion-ld
+    links:
+      - mongo
+    expose:
+        - "1026"
+    ports:
+      - "1026:1026"
+    networks:
+      app_subnet:
+        ipv4_address: 172.16.1.7
+    command: -dbhost mongo
+
+  mongo:
+    image: mongo:3.6
+    command: --nojournal --bind_ip_all --smallfiles
+    ports:
+      - '27017:27017'
+    networks:
+      app_subnet:
+        ipv4_address: 172.16.1.6    
+  
+
+  openapithing:
+    build: ./OpenAPI_WoT
+    ports:
+        - 5001:5000
+    links: 
+        - mongo
+    depends_on:
+        - mongo
+    volumes:
+        - ./OpenAPI_WoT:/code
+    networks:
+        app_subnet:
+            ipv4_address: 172.16.1.9
+
+  wotproxy:
+      build: ./WoTproxy/
+      ports:
+          - 5002:5000
+      links: 
+          - orion
+      networks:
+          app_subnet:
+              ipv4_address: 172.16.1.5
+
+  nodered:
+    build: ./nodered
+    environment:
+        - TZ=Europe/Amsterdam
+    ports: 
+        - "1880:1880"
+    volumes:
+        - node-red-data:/data
+    links:
+        - mongo
+    depends_on:
+        - openapithing
+    networks:
+        app_subnet:
+            ipv4_address: 172.16.1.8
+
+  # iot-agent:
+  #       image: fiware/iotagent-json
+  #       hostname: iot-agent
+  #       container_name: fiware-iot-agent
+  #       depends_on:
+  #           - mongo
+  #       expose:
+  #           - "4041"
+  #           - "7896"
+  #       ports:
+  #           - "4041:4041"
+  #           - "7896:7896"
+  #       environment:
+  #           - "IOTA_CB_HOST=orion"
+  #           - "IOTA_CB_PORT=1026"
+  #           - "IOTA_NORTH_PORT=4041"
+  #           - "IOTA_REGISTRY_TYPE=mongo"
+  #           - "IOTA_MONGO_HOST=mongo"
+  #           - "IOTA_MONGO_PORT=27017"
+  #           - "IOTA_MONGO_DB=iotagent-json"
+  #           - "IOTA_HTTP_PORT=7896"
+  #           - "IOTA_PROVIDER_URL=http://iot-agent:4041"
+  #       networks:
+  #           app_subnet:
+  #               ipv4_address: 172.16.1.10
+
+networks:
+  app_subnet: 
+    ipam:
+        config: 
+            - subnet: 172.16.1.0/24   
+
+volumes:
+  mysql-db:
+  mongo:
+  node-red-data:
